@@ -48,7 +48,7 @@ icons = {
 	'Půlnočka': './icon/fork.png',
 }
 
-def paticka(pdf):
+def paticka(pdf, qr=True):
 	pdf.setFont('Robo_reg', 2)
 	pdf.setFont('Robo_reg', 8)
 	pdf.drawString(10,30,"V programu může dojít ke změnám. Aktuální verze programu je v online verzi dynamického programu.")
@@ -56,10 +56,11 @@ def paticka(pdf):
 	pdf.setFont('Robo_light', 7)
 	pdf.drawString(10,5,"Tento program byl vygenerován automaticky %s na základě expedičního dynamického programu, Astronomická Expedice 2017, Roman Dvořák, DailyCalendar.py, v0.2" %(arrow.now().strftime('%d.%m.%Y v %H:%M')))
 	
-	pdf.drawImage("qr_gcal.jpg", 450, 80, 100, 100)
-	pdf.setFont('Robo_light', 10)
-	pdf.drawString(460,83,"Online verze programu")
-	pdf.drawString(460,73,"http://goo.gl/WCkXKv")
+	if qr:
+		pdf.drawImage("qr_gcal.jpg", 450, 80, 100, 100)
+		pdf.setFont('Robo_light', 10)
+		pdf.drawString(460,83,"Online verze programu")
+		pdf.drawString(460,73,"http://goo.gl/WCkXKv")
 
 def hlavicka(pdf):
 
@@ -110,11 +111,11 @@ def udalost(pdf, event):
  	#pdf.drawString(50,page, str(event.uid))
 	pdf.setFont('Robo_reg', 12)
 	pdf.drawString(75,page, name)
-	pdf.setFont('Robo_light', 9)
+	pdf.setFont('Robo_light', 11)
 	if begin == end:
-		pdf.drawString(100,page - 12, "(" + begin.strftime('%H:%M') + ")    "+ location  )
+		pdf.drawString(100,page - 12,  begin.strftime('%H:%M') + "    "+ location  )
 	else:
-		pdf.drawString(100,page - 12, "(" + begin.strftime('%H:%M') + " - " + end.strftime('%H:%M') + ")    "+ location)
+		pdf.drawString(100,page - 12, begin.strftime('%H:%M') + " - " + end.strftime('%H:%M') + "    "+ location)
 	pdf.setFont('Robo_light', 9)
 	l_desc = len(description)
 	print l_desc
@@ -159,8 +160,10 @@ for i, event in enumerate(day_events):
 			page -= udalost(pdf, event)
 			#page -= 55
 			if page <= 70:
+
+				pdf.drawString(530,20, "Další stránka")
 				pdf.showPage()
-				paticka(pdf)
+				paticka(pdf, qr = False)
 				page = 800
 		except Exception as e:
 			print "Err >>", repr(e)
