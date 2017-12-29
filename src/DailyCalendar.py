@@ -20,7 +20,7 @@ import arrow
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont   
+from reportlab.pdfbase.ttfonts import TTFont
 
 pdfmetrics.registerFont(TTFont('Robo_light', './ttf/RobotoCondensed-Light.ttf'))
 pdfmetrics.registerFont(TTFont('Robo_reg', './ttf/Roboto-Regular.ttf'))
@@ -32,6 +32,8 @@ date2 = arrow.Arrow(2017, 8, 18, 5)
 blacklist = ["13nrad4g7hjjv8omig8vvitjcc@google.com"]
 
 url = "https://calendar.google.com/calendar/ical/3fo3jbnh8fq15h3g59uakeiv6s%40group.calendar.google.com/private-15cbb7aa831a14d137b0d151b697929e/basic.ics"
+path = urlopen(url).read().decode('utf8')
+print path
 c = Calendar(urlopen(url).read().decode('utf8'))
 
 date.humanize(locale='cs')
