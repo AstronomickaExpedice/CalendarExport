@@ -26,17 +26,17 @@ pdfmetrics.registerFont(TTFont('Robo_light', './ttf/RobotoCondensed-Light.ttf'))
 pdfmetrics.registerFont(TTFont('Robo_reg', './ttf/Roboto-Regular.ttf'))
 
 
-date = arrow.Arrow(2017, 7, 1, 22)
-date2 = arrow.Arrow(2017, 8, 18, 5)
+date = arrow.Arrow(2018, 8, 1, 22)
+date2 = arrow.Arrow(2018, 8, 20, 5)
 
 blacklist = ["13nrad4g7hjjv8omig8vvitjcc@google.com"]
 
 url = "https://calendar.google.com/calendar/ical/3fo3jbnh8fq15h3g59uakeiv6s%40group.calendar.google.com/private-15cbb7aa831a14d137b0d151b697929e/basic.ics"
 path = urlopen(url).read().decode('utf8')
-print path
+print(path)
 c = Calendar(urlopen(url).read().decode('utf8'))
 
-date.humanize(locale='cs')
+date.humanize(locale='en')
 #day_events = c.timeline.overlapping(date, date2)
 day_events = c.timeline.included(date, date2)
 #day_events = c.timeline
@@ -69,7 +69,7 @@ def hlavicka(pdf):
 	pdf.showPage()
 	pdf.setLineWidth(.3)
 	pdf.setFont('Robo_light', 24)
-	pdf.drawString(80,790,"Astronomická expedice Úpice 2017")
+	pdf.drawString(80,790,"Astronomická expedice Úpice 2018")
 	pdf.setFont('Robo_reg', 24)
 	pdf.drawString(80,790-28,"Denní program")
 	pdf.setFont('Robo_light', 12)
@@ -78,14 +78,14 @@ def hlavicka(pdf):
 
 def udalost(pdf, event):
 	height = 35
-	print "~~~~~~~~~~~~~~~~~~~"
+	print("~~~~~~~~~~~~~~~~~~~")
 	begin = event.begin.to('Europe/Prague')
 	end = event.end.to('Europe/Prague')
 	name = event.name
 	location = event.location
-	color = event.color
+	#color = event.color
 	description = event.description
-	print name
+	print(name)
 	pdf.setFont('Robo_reg', 2)
 
 	icons = {
@@ -99,10 +99,12 @@ def udalost(pdf, event):
 		'pozorování': './icon/telescope.png',
 		'Zpracování': './icon/pencil.png',
 		'Příprava': './icon/tool-box-xxl.png',
+		'Slunce': './icon/baseline_wb_sunny_black_48dp.png',
+		'slunce': './icon/baseline_wb_sunny_black_48dp.png',
 		'event': './icon/today-xxl.png',
 	}
 
-	print name.encode('UTF-8').split(" ")[0]
+	print(name.encode('UTF-8').split(" ")[0])
 
 	if name.encode('UTF-8').split(" ")[0] in icons:
 		pdf.drawImage(icons[name.encode('UTF-8').split(" ")[0]], 55, page-3, 15, 15)
@@ -120,7 +122,7 @@ def udalost(pdf, event):
 		pdf.drawString(100,page - 12, begin.strftime('%H:%M') + " - " + end.strftime('%H:%M') + "    "+ location)
 	pdf.setFont('Robo_light', 9)
 	l_desc = len(description)
-	print l_desc
+	print(l_desc)
 	if l_desc == 0:
 		height += 0
 	elif l_desc < 150:
@@ -138,7 +140,7 @@ def udalost(pdf, event):
 
 pdf = canvas.Canvas("program.pdf")
 page = 700
-day = arrow.Arrow(2017, 01, 01)
+day = arrow.Arrow(2018, 8, 1)
 for i, event in enumerate(day_events):
 	begin = event.begin.to('Europe/Prague')
 
@@ -150,15 +152,15 @@ for i, event in enumerate(day_events):
 				hlavicka(pdf)
 				paticka(pdf)
 				page = 700
-				print ""
-				print "NOVY DEN"
+				print("")
+				print("NOVY DEN")
 
 				pdf.setFont('Robo_light', 14)
-				pdf.drawString(300,page+35, "Program na "+ begin.format('dddd', locale="cs") + day.strftime('   (%D)'))
+				pdf.drawString(300,page+35, "Program na "+ begin.format('dddd', locale="en") + day.strftime('   (%D)'))
 				day = begin.replace(days=+1, hour=5, minute=0)
-				print begin
+				print(begin)
 
-				print "===================================="
+				print("====================================")
 			page -= udalost(pdf, event)
 			#page -= 55
 			if page <= 70:
@@ -168,12 +170,12 @@ for i, event in enumerate(day_events):
 				paticka(pdf, qr = False)
 				page = 800
 		except Exception as e:
-			print "Err >>", repr(e)
+			print("Err >>", repr(e))
 	else:
 		print "out of range !!!!!!!!!!!!!!!!!!!!!!!!!!!", event.name
 
 pdf.save()
-print "done"
+print("done")
 
 '''
 
