@@ -43,11 +43,23 @@ day_events = c.timeline.included(date, date2)
 #print day_events
 #print len(day_events)
 
+uids = []
+
+
 icons = {
 	'Snídaně': './icon/fork.png',
 	'Oběd': './icon/fork.png',
 	'Večeře': './icon/fork.png',
 	'Půlnočka': './icon/fork.png',
+	'Budíček': './icon/alarm_grey_192x192.png',
+	'Přelet': './icon/satellite-xxl.png',
+	'Táborák': './icon/feedburner-xxl.png',
+	'Pozorování': './icon/telescope.png',
+	'Zpracování': './icon/pencil.png',
+	'Příprava': './icon/tool-box-xxl.png',
+	'Východ': './icon/baseline_wb_sunny_black_48dp.png',
+	'Západ': './icon/baseline_wb_sunny_black_48dp.png',
+	'event': './icon/today-xxl.png',
 }
 
 def paticka(pdf, qr=True):
@@ -56,7 +68,7 @@ def paticka(pdf, qr=True):
 	pdf.drawString(10,30,"V programu může dojít ke změnám. Aktuální verze programu je v online verzi dynamického programu.")
 	pdf.drawString(10,21,"V případě špatného počasí bude místo pozorování vymyšlen náhradní program. Pozorování je možné prodloužit po dohodě s vedoucím")
 	pdf.setFont('Robo_light', 7)
-	pdf.drawString(10,5,"Tento program byl vygenerován automaticky %s na základě expedičního dynamického programu, Astronomická Expedice 2017, Roman Dvořák, DailyCalendar.py, v0.2" %(arrow.now().strftime('%d.%m.%Y v %H:%M')))
+	pdf.drawString(10,5,"Tento program byl vygenerován automaticky %s na základě expedičního dynamického programu, Astronomická Expedice 2017, Roman Dvořák, DailyCalendar.py, v0.4 (2017-2018)" %(arrow.now().strftime('%d.%m.%Y v %H:%M')))
 	
 	if qr:
 		pdf.drawImage("qr_gcal.jpg", 450, 80, 100, 100)
@@ -86,25 +98,10 @@ def udalost(pdf, event):
 	#color = event.color
 	description = event.description
 	print(name)
+	print(event.uid)
 	pdf.setFont('Robo_reg', 2)
 
-	icons = {
-		'Snídaně': './icon/fork.png',
-		'Oběd': './icon/fork.png',
-		'Večeře': './icon/fork.png',
-		'Půlnočka': './icon/fork.png',
-		'Budíček': './icon/alarm_grey_192x192.png',
-		'Přelet': './icon/satellite-xxl.png',
-		'Táborák': './icon/feedburner-xxl.png',
-		'pozorování': './icon/telescope.png',
-		'Zpracování': './icon/pencil.png',
-		'Příprava': './icon/tool-box-xxl.png',
-		'Slunce': './icon/baseline_wb_sunny_black_48dp.png',
-		'slunce': './icon/baseline_wb_sunny_black_48dp.png',
-		'event': './icon/today-xxl.png',
-	}
-
-	print(name.encode('UTF-8').split(" ")[0])
+	#print(name.encode('UTF-8').split(" ")[0])
 
 	if name.encode('UTF-8').split(" ")[0] in icons:
 		pdf.drawImage(icons[name.encode('UTF-8').split(" ")[0]], 55, page-3, 15, 15)
@@ -152,17 +149,18 @@ for i, event in enumerate(day_events):
 				hlavicka(pdf)
 				paticka(pdf)
 				page = 700
-				print("")
-				print("NOVY DEN")
+				uids = []
 
 				pdf.setFont('Robo_light', 14)
-				pdf.drawString(300,page+35, "Program na "+ begin.format('dddd', locale="en") + day.strftime('   (%D)'))
+				pdf.drawString(300,page+35, "Program na "+ begin.format('dddd', locale="en") + begin.strftime('   (%D)'))
 				day = begin.replace(days=+1, hour=5, minute=0)
-				print(begin)
-
+				print("Novy den", begin)
 				print("====================================")
-			page -= udalost(pdf, event)
-			#page -= 55
+			if (not event.uid in uids):
+				page -= udalost(pdf, event)
+				uids += [event.uid]
+			else:
+				print("SKIP:", event.name, event.uid)	
 			if page <= 70:
 
 				pdf.drawString(530,20, "Další stránka")
