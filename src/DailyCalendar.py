@@ -3,9 +3,11 @@
 
 from ics import Calendar, Event
 import os
+import re
 
 import locale
-locale.setlocale(locale.LC_TIME, "")
+#locale.setlocale(locale.LC_TIME, "cs_CZ.UTF-8")
+#locale.setlocale(locale.LC_TIME, "")
 
 from ics.event import Event
 from ics.timeline import Timeline
@@ -26,6 +28,14 @@ pdfmetrics.registerFont(TTFont('Robo_light', './ttf/RobotoCondensed-Light.ttf'))
 pdfmetrics.registerFont(TTFont('Robo_reg', './ttf/Roboto-Regular.ttf'))
 
 
+def changeDate(date):
+    a = date.group(0)
+    print("change vstup:", a)
+    date_new = "{}-{}-{}T{}:{}".format(a[0:4], a[4:6], a[6:8], a[9:11], a[11:13])
+    print(date_new)
+    #date_new = "2018-07-05"
+    return(date_new)
+
 date = arrow.Arrow(2018, 8, 1, 22)
 date2 = arrow.Arrow(2018, 8, 20, 5)
 
@@ -33,10 +43,25 @@ blacklist = ["13nrad4g7hjjv8omig8vvitjcc@google.com"]
 
 url = "https://calendar.google.com/calendar/ical/3fo3jbnh8fq15h3g59uakeiv6s%40group.calendar.google.com/private-15cbb7aa831a14d137b0d151b697929e/basic.ics"
 path = urlopen(url).read().decode('utf8')
-print(path)
-c = Calendar(urlopen(url).read().decode('utf8'))
+#print(path)
+#c = Calendar(path)
+#c = Calendar(urlopen(url).read().decode('utf8'))
+
+#path_e = re.sub('201(.*)T(.*)Z', changeDate, path)
+path_e = re.sub('[0-9]+T[0-9]+', changeDate, path)
+
+import io
+f = io.open('cal.ical', 'w', encoding='utf8')
+#f = open('cal.ical', 'w')
+f.write(path_e)
+f.close()
+
+print(path_e)
+
+c = Calendar(path_e)
 
 date.humanize(locale='en')
+#date.humanize()
 #day_events = c.timeline.overlapping(date, date2)
 day_events = c.timeline.included(date, date2)
 #day_events = c.timeline
@@ -152,7 +177,7 @@ for i, event in enumerate(day_events):
 				uids = []
 
 				pdf.setFont('Robo_light', 14)
-				pdf.drawString(300,page+35, "Program na "+ begin.format('dddd', locale="en") + begin.strftime('   (%D)'))
+				pdf.drawString(300,page+35, "Program na "+ begin.format('dddd', locale="cs") + begin.strftime('   (%D)'))
 				day = begin.replace(days=+1, hour=5, minute=0)
 				print("Novy den", begin)
 				print("====================================")
