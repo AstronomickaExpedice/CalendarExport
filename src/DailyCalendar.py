@@ -6,7 +6,7 @@ import os
 import re
 
 import locale
-#locale.setlocale(locale.LC_TIME, "cs_CZ.UTF-8")
+locale.setlocale(locale.LC_TIME, "cs_CZ.UTF-8")
 #locale.setlocale(locale.LC_TIME, "")
 
 from ics.event import Event
@@ -23,6 +23,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+import textwrap
 
 pdfmetrics.registerFont(TTFont('Robo_light', './ttf/RobotoCondensed-Light.ttf'))
 pdfmetrics.registerFont(TTFont('Robo_reg', './ttf/Roboto-Regular.ttf'))
@@ -48,19 +49,19 @@ path = urlopen(url).read().decode('utf8')
 #c = Calendar(urlopen(url).read().decode('utf8'))
 
 #path_e = re.sub('201(.*)T(.*)Z', changeDate, path)
-path_e = re.sub('[0-9]+T[0-9]+', changeDate, path)
+path_e = re.sub('[0-9]+T[0-9]+', changeDate, path) #.encode('utf-8').strip()
 
-import io
-f = io.open('cal.ical', 'w', encoding='utf8')
+#import io
+#f = io.open('cal.ical', 'w', encoding='utf8')
 #f = open('cal.ical', 'w')
-f.write(path_e)
-f.close()
+#f.write(path_e)
+#f.close()
 
-print(path_e)
+#print(path_e)
 
 c = Calendar(path_e)
 
-date.humanize(locale='en')
+date.humanize(locale='cs')
 #date.humanize()
 #day_events = c.timeline.overlapping(date, date2)
 day_events = c.timeline.included(date, date2)
@@ -147,13 +148,21 @@ def udalost(pdf, event):
 	print(l_desc)
 	if l_desc == 0:
 		height += 0
+        else:
+            w = textwrap.wrap(description, width=100)
+            for r in w:
+                print(r)
+                pdf.drawString(100, page-height+10, r)
+                height +=10
+        '''
 	elif l_desc < 150:
 		height += 10
 		pdf.drawString(100,page - 25, description )
 	elif l_desc < 500:
 		height += 20
 		pdf.drawString(100,page - 25, description )
-	#pdf.setFont('Robo_light', 4)
+	'''
+        #pdf.setFont('Robo_light', 4)
  	#pdf.drawString(50,page-40, str(event.uid))
 
 
