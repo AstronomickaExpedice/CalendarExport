@@ -119,18 +119,18 @@ def udalost(pdf, event):
 	print("~~~~~~~~~~~~~~~~~~~")
 	begin = event.begin.to('Europe/Prague')
 	end = event.end.to('Europe/Prague')
-	name = event.name
-	location = event.location
-	#color = event.color
-	description = event.description
+	print("name", event.name, type(event.name))
+        name = event.name.encode('utf8')
+	location = event.location.encode('UTF-8')
+	description = event.description.encode('utf8')
 	print(name)
-	print(event.uid)
+	#print(event.uid)
 	pdf.setFont('Robo_reg', 2)
 
-	#print(name.encode('UTF-8').split(" ")[0])
+	#print(name.split(" ")[0])
 
-	if name.encode('UTF-8').split(" ")[0] in icons:
-		pdf.drawImage(icons[name.encode('UTF-8').split(" ")[0]], 55, page-3, 15, 15)
+	if name.split(" ")[0] in icons:
+		pdf.drawImage(icons[name.split(" ")[0]], 55, page-3, 15, 15)
 	else:
 		pdf.drawImage(icons['event'], 55, page-3, 15, 15)
 
@@ -139,7 +139,8 @@ def udalost(pdf, event):
 	pdf.setFont('Robo_reg', 12)
 	pdf.drawString(75,page, name)
 	pdf.setFont('Robo_light', 11)
-	if begin == end:
+	print("end")
+        if begin == end:
 		pdf.drawString(100,page - 12,  begin.strftime('%H:%M') + "    "+ location  )
 	else:
 		pdf.drawString(100,page - 12, begin.strftime('%H:%M') + " - " + end.strftime('%H:%M') + "    "+ location)
@@ -191,7 +192,8 @@ for i, event in enumerate(day_events):
 				print("Novy den", begin)
 				print("====================================")
 			if (not event.uid in uids):
-				page -= udalost(pdf, event)
+				print("updalost")
+                                page -= udalost(pdf, event)
 				uids += [event.uid]
 			else:
 				print("SKIP:", event.name, event.uid)	
